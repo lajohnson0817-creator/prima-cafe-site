@@ -437,7 +437,7 @@
 
   <header class="header" id="top">
     <div class="container header__inner">
-      <a class="brand" href="#top" aria-label="Prima Café home">
+      <a class="brand" href="#hero" aria-label="Prima Café home">
         <svg viewBox="0 0 46 56" aria-hidden="true" style="color:var(--rose)"><use href="#cactus-arch"/></svg>
         <span class="brand__word"><span class="brand__name">PRIMA</span><span class="brand__sub">CAFÉ</span></span>
       </a>
@@ -831,6 +831,22 @@
   <script>
   (function () {
     var root = document.documentElement;
+
+    // Always open on the hero: don't restore an old scroll position, and treat
+    // the logo / #top / #hero as "back to the very top" (the hero is a long scroll story).
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    function toTop(smooth) {
+      window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+      if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+    }
+    if (!location.hash || location.hash === '#top' || location.hash === '#hero') toTop(false);
+    else window.addEventListener('load', function () {
+      var t = document.getElementById(location.hash.slice(1));
+      if (t) setTimeout(function () { t.scrollIntoView({ behavior: 'instant' }); }, 0);
+    });
+    document.querySelectorAll('a[href="#hero"], a[href="#top"]').forEach(function (a) {
+      a.addEventListener('click', function (e) { e.preventDefault(); toTop(true); });
+    });
     var header = document.querySelector('.header');
     var burger = document.querySelector('.burger');
     document.getElementById('year').textContent = new Date().getFullYear();
